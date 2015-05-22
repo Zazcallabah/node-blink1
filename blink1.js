@@ -296,7 +296,8 @@ Blink1.prototype.readPatternLine = function(position, callback) {
       r: response[2],
       g: response[3],
       b: response[4],
-      fadeMillis: ((response[5] << 8) + (response[6] & 0xff)) * 10
+      fadeMillis: ((response[5] << 8) + (response[6] & 0xff)) * 10,
+      ledn: response[7]
     };
 
     if(this._isValidCallback(callback)) {
