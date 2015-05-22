@@ -306,6 +306,14 @@ Blink1.prototype.readPatternLine = function(position, callback) {
   });
 };
 
+Blink1.prototype.setLed = function(ledn, callback) {
+  this._validateIndex(ledn);
+  this._sendCommand('l', ledn);
+  if(this._isValidCallback(callback)) {
+    callback();
+  }
+};
+
 Blink1.prototype.close = function(callback) {
 	this.hidDevice.close();
 
