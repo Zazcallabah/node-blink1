@@ -105,6 +105,10 @@ Blink1.prototype._validatePosition = function(position) {
   this._validateNumber(position, 'position', 0, 11);
 };
 
+Blink1.prototype._validateMk2Position = function(position) {
+  this._validateNumber(position, 'position', 0, 31);
+};
+
 Blink1.prototype._validateIndex = function(index) {
   this._validateNumber(index, 'index', 0, 2);
 };
@@ -243,7 +247,7 @@ Blink1.prototype._play = function(play, position, callback) {
 };
 
 Blink1.prototype.play = function(position, callback) {
-  this._validatePosition(position);
+  this._validateMk2Position(position);
 
   this._play(1, position, callback);
 };
@@ -257,8 +261,8 @@ Blink1.prototype._playLoop = function(play, position, endPosition, count, callba
 };
 
 Blink1.prototype.playLoop = function(startPosition, endPosition, count, callback) {
-  this._validatePosition(startPosition);
-  this._validatePosition(endPosition);
+  this._validateMk2Position(startPosition);
+  this._validateMk2Position(endPosition);
   this._validateCount(count);
 
   this._playLoop(1, startPosition, endPosition, count, callback);
@@ -271,7 +275,7 @@ Blink1.prototype.pause = function(callback) {
 Blink1.prototype.writePatternLine = function(fadeMillis, r, g, b, position, callback) {
   this._validateFadeMillis(fadeMillis);
   this._validateRGB(r, g, b);
-  this._validatePosition(position);
+  this._validateMk2Position(position);
 
   var dms = fadeMillis / 10;
 
@@ -283,7 +287,7 @@ Blink1.prototype.writePatternLine = function(fadeMillis, r, g, b, position, call
 };
 
 Blink1.prototype.readPatternLine = function(position, callback) {
-  this._validatePosition(position);
+  this._validateMk2Position(position);
 
   this._sendCommand('R', 0, 0, 0, 0, 0, position, 0);
 
