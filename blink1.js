@@ -185,10 +185,11 @@ Blink1.prototype.fadeToRGB = function(fadeMillis, r, g, b, index, callback) {
   }
 };
 
-Blink1.prototype.setRGB = function(r, g, b, callback) {
+Blink1.prototype.setRGB = function(r, g, b, index, callback) {
   this._validateRGB(r, g, b);
+  this._validateIndex(index);
 
-  this._sendCommand('n', this.degamma(r), this.degamma(g), this.degamma(b));
+  this._sendCommand('n', this.degamma(r), this.degamma(g), this.degamma(b), 0, 0, index);
 
   if(this._isValidCallback(callback)) {
     callback();
