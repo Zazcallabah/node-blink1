@@ -307,6 +307,25 @@ Blink1.prototype.readPatternLine = function(position, callback) {
   });
 };
 
+Blink1.prototype.readCurrentColor = function(ledn, callback) {
+  this._validateMk2Position(ledn);
+
+  this._sendCommand('r', 0, 0, 0, 0, 0, ledn);
+
+  this._readResponse(function(response) {
+    var value = {
+      r: response[2],
+      g: response[3],
+      b: response[4],
+      ledn: response[7]
+    };
+
+    if(this._isValidCallback(callback)) {
+      callback(value);
+    }
+  });
+};
+
 Blink1.prototype.setLed = function(ledn, callback) {
   this._validateIndex(ledn);
   this._sendCommand('l', ledn);
