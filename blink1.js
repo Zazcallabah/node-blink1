@@ -326,6 +326,24 @@ Blink1.prototype.readCurrentColor = function(ledn, callback) {
   });
 };
 
+Blink1.prototype.readPlayState = function(callback) {
+  this._sendCommand('S');
+
+  this._readResponse(function(response) {
+    var value = {
+      playing: response[2],
+      playstart: response[3],
+      playend: response[4],
+      playcount: response[5],
+      playpos: response[6]
+    };
+
+    if(this._isValidCallback(callback)) {
+      callback(value);
+    }
+  });
+};
+
 Blink1.prototype.setLed = function(ledn, callback) {
   this._validateIndex(ledn);
   this._sendCommand('l', ledn);
