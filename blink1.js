@@ -308,7 +308,7 @@ Blink1.prototype.readPatternLine = function(position, callback) {
 };
 
 Blink1.prototype.readCurrentColor = function(ledn, callback) {
-  this._validateMk2Position(ledn);
+  this._validateIndex(ledn);
 
   this._sendCommand('r', 0, 0, 0, 0, 0, ledn);
 
