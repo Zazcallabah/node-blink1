@@ -162,7 +162,7 @@ Blink1.prototype.degamma = function(n) {
 };
 
 
-Blink1.prototype.fadeToRGB = function(fadeMillis, r, g, b, index, callback) {
+Blink1.prototype.fadeToRGB = function(fadeMillis, r, g, b, index, nogamma, callback) {
   this._validateFadeMillis(fadeMillis);
   this._validateRGB(r, g, b);
 
@@ -177,19 +177,27 @@ Blink1.prototype.fadeToRGB = function(fadeMillis, r, g, b, index, callback) {
   }
 
   this._validateIndex(index);
+  
+  var cr = nogamma ? r : this.degamma(r);
+  var cg = nogamma ? g : this.degamma(g);
+  var cb = nogamma ? b : this.degamma(b);
 
-  this._sendCommand('c', this.degamma(r), this.degamma(g), this.degamma(b), dms >> 8, dms % 0xff, index);
+  this._sendCommand('c', cr, cg, cb, dms >> 8, dms % 0xff, index);
 
   if(this._isValidCallback(callback)) {
     setTimeout(callback, fadeMillis);
   }
 };
 
-Blink1.prototype.setRGB = function(r, g, b, index, callback) {
+Blink1.prototype.setRGB = function(r, g, b, index, nogamma, callback) {
   this._validateRGB(r, g, b);
   this._validateIndex(index);
+  
+  var cr = nogamma ? r : this.degamma(r);
+  var cg = nogamma ? g : this.degamma(g);
+  var cb = nogamma ? b : this.degamma(b);
 
-  this._sendCommand('n', this.degamma(r), this.degamma(g), this.degamma(b), 0, 0, index);
+  this._sendCommand('n', cr, cg, cb, 0, 0, index);
 
   if(this._isValidCallback(callback)) {
     callback();
@@ -273,14 +281,18 @@ Blink1.prototype.pause = function(callback) {
   this._play(0, 0, callback);
 };
 
-Blink1.prototype.writePatternLine = function(fadeMillis, r, g, b, position, callback) {
+Blink1.prototype.writePatternLine = function(fadeMillis, r, g, b, position, nogamma, callback) {
   this._validateFadeMillis(fadeMillis);
   this._validateRGB(r, g, b);
   this._validateMk2Position(position);
 
   var dms = fadeMillis / 10;
 
-  this._sendCommand('P', this.degamma(r), this.degamma(g), this.degamma(b), dms >> 8, dms % 0xff, position, 0);
+  var cr = nogamma ? r : this.degamma(r);
+  var cg = nogamma ? g : this.degamma(g);
+  var cb = nogamma ? b : this.degamma(b);
+
+  this._sendCommand('P', cr, cg, cb, dms >> 8, dms % 0xff, position, 0);
 
   if(this._isValidCallback(callback)) {
     callback();
