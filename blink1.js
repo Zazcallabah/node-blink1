@@ -167,6 +167,10 @@ Blink1.prototype.fadeToRGB = function(fadeMillis, r, g, b, index, nogamma, callb
   this._validateRGB(r, g, b);
 
   var dms = fadeMillis / 10;
+  
+  // time component cant be 0
+  if( dms === 0 )
+	dms = 1;
 
   if (this._isValidCallback(index)) {
     // backwards compatible API, no index
