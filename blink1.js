@@ -140,7 +140,7 @@ Blink1.prototype.fadeRGB = function(opt) {
   var r = parseInt(opt.r || 0, 10);
   var g = parseInt(opt.g || 0, 10);
   var b = parseInt(opt.b || 0, 10);
-  var fadeMillis = parseInt(opt.fadeMillis || 0, 10);
+  var fadeMillis = parseInt(opt.fadeMillis || opt.speed || 0, 10);
   var gammaAdjust = opt.gammaAdjust || false;
 
   this._validateFadeMillis(fadeMillis);
@@ -220,8 +220,8 @@ Blink1.prototype.serverDown = function(opt) {
 Blink1.prototype.playLoop = function(opt) {
   if(!opt)
     opt={};
-  var startPosition = parseInt(opt.startPosition || 0, 10);
-  var endPosition = parseInt(opt.endPosition || 0, 10);
+  var startPosition = parseInt(opt.startPosition || opt.start || 0, 10);
+  var endPosition = parseInt(opt.endPosition || opt.end || 0, 10);
   var count = parseInt(opt.count || 0, 10);
   var play = parseInt(opt.play || 0, 10);
 
@@ -269,7 +269,7 @@ Blink1.prototype.readPlayState = function(opt) {
 Blink1.prototype.writePatternLine = function(opt) {
   if(!opt)
     opt={};
-  var fadeMillis = parseInt(opt.fadeMillis || 0, 10);
+  var fadeMillis = parseInt(opt.fadeMillis || opt.speed || 0, 10);
   var r = parseInt(opt.r || 0, 10);
   var g = parseInt(opt.g || 0, 10);
   var b = parseInt(opt.b || 0, 10);
@@ -282,6 +282,10 @@ Blink1.prototype.writePatternLine = function(opt) {
   this._validateMk2Position(lineIndex);
 
   var dms = fadeMillis / 10;
+
+  // time component cant be 0
+  if( dms === 0 )
+    dms = 1;
 
   var cr = gammaAdjust ? this.degamma(r) : r;
   var cg = gammaAdjust ? this.degamma(g) : g;
