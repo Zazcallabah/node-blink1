@@ -301,6 +301,13 @@ describe('blink(1)', function() {
 
       sentFeatureReport.should.eql([FEATURE_REPORT_ID, 0x63, R, G, B, (FADE_MILLIS / 10) >> 8, (FADE_MILLIS / 10) % 0xff, INDEX, 0]);
     });
+	
+    it('should send fadetorgb index feature report speed param', function() {
+      blink1.fadeRGB({speed:FADE_MILLIS, r:R, g:G, b:B, ledn:INDEX});
+
+      sentFeatureReport.should.eql([FEATURE_REPORT_ID, 0x63, R, G, B, (FADE_MILLIS / 10) >> 8, (FADE_MILLIS / 10) % 0xff, INDEX, 0]);
+    });
+
     it('should send fadetorgb index feature report despite string parameters', function() {
       blink1.fadeRGB({fademillis:""+FADE_MILLIS, r:""+R, g:""+G, b:""+B, ledn:""+INDEX});
 
