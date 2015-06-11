@@ -133,7 +133,7 @@ Blink1.prototype.degamma = function(n) {
           Math.floor((1 << Math.floor(n / 32)) * Math.floor((n % 32) + 1) + 15) / 32);
 };
 
-Blink1.prototype.fadeToRGB = function(opt) {
+Blink1.prototype.fadeRGB = function(opt) {
   if(!opt)
     opt={};
   var ledn = parseInt(opt.ledn || 0, 10);
@@ -153,9 +153,9 @@ Blink1.prototype.fadeToRGB = function(opt) {
   if( dms === 0 )
     dms = 1;
 
-  var cr = gammaAdjust ? r : this.degamma(r);
-  var cg = gammaAdjust ? g : this.degamma(g);
-  var cb = gammaAdjust ? b : this.degamma(b);
+  var cr = gammaAdjust ? this.degamma(r) : r;
+  var cg = gammaAdjust ? this.degamma(g) : g;
+  var cb = gammaAdjust ? this.degamma(b) : b;
 
   this._sendCommand('c', cr, cg, cb, dms >> 8, dms % 0xff, ledn);
 
@@ -174,16 +174,16 @@ Blink1.prototype.setRGB = function(opt) {
   this._validateRGB(r, g, b);
   this._validateIndex(ledn);
   
-  var cr = gammaAdjust ? r : this.degamma(r);
-  var cg = gammaAdjust ? g : this.degamma(g);
-  var cb = gammaAdjust ? b : this.degamma(b);
+  var cr = gammaAdjust ? this.degamma(r) : r;
+  var cg = gammaAdjust ? this.degamma(g) : g;
+  var cb = gammaAdjust ? this.degamma(b) : b;
 
   this._sendCommand('n', cr, cg, cb, 0, 0, ledn);
 
   this._doCallback(opt);
 };
 
-Blink1.prototype.readCurrentRGB = function(opt) {
+Blink1.prototype.readRGB = function(opt) {
   if(!opt)
     opt={};
   var ledn = parseInt(opt.ledn || 0, 10);
@@ -233,7 +233,7 @@ Blink1.prototype.playLoop = function(opt) {
     throw new Error('startPosition must be less than or equal to endPosition');
   }
 
-  this._sendCommand('p', play, position, endPosition, count);
+  this._sendCommand('p', play, startPosition, endPosition, count);
 
   this._doCallback(opt);
 };
@@ -283,9 +283,9 @@ Blink1.prototype.writePatternLine = function(opt) {
 
   var dms = fadeMillis / 10;
 
-  var cr = gammaAdjust ? r : this.degamma(r);
-  var cg = gammaAdjust ? g : this.degamma(g);
-  var cb = gammaAdjust ? b : this.degamma(b);
+  var cr = gammaAdjust ? this.degamma(r) : r;
+  var cg = gammaAdjust ? this.degamma(g) : g;
+  var cb = gammaAdjust ? this.degamma(b) : b;
 
   this._sendCommand('P', cr, cg, cb, dms >> 8, dms % 0xff, lineIndex);
 
