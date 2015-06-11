@@ -136,11 +136,11 @@ Blink1.prototype.degamma = function(n) {
 Blink1.prototype.fadeToRGB = function(opt) {
   if(!opt)
     opt={};
-  var ledn = opt.ledn || 0;
-  var r = opt.r || 0;
-  var g = opt.g || 0;
-  var b = opt.b || 0;
-  var fadeMillis = opt.fadeMillis || 0;
+  var ledn = parseInt(opt.ledn || 0, 10);
+  var r = parseInt(opt.r || 0, 10);
+  var g = parseInt(opt.g || 0, 10);
+  var b = parseInt(opt.b || 0, 10);
+  var fadeMillis = parseInt(opt.fadeMillis || 0, 10);
   var gammaAdjust = opt.gammaAdjust || false;
 
   this._validateFadeMillis(fadeMillis);
@@ -165,10 +165,10 @@ Blink1.prototype.fadeToRGB = function(opt) {
 Blink1.prototype.setRGB = function(opt) {
   if(!opt)
     opt={};
-  var ledn = opt.ledn || 0;
-  var r = opt.r || 0;
-  var g = opt.g || 0;
-  var b = opt.b || 0;
+  var ledn = parseInt(opt.ledn || 0, 10);
+  var r = parseInt(opt.r || 0, 10);
+  var g = parseInt(opt.g || 0, 10);
+  var b = parseInt(opt.b || 0, 10);
   var gammaAdjust = opt.gammaAdjust || false;
 
   this._validateRGB(r, g, b);
@@ -186,7 +186,7 @@ Blink1.prototype.setRGB = function(opt) {
 Blink1.prototype.readCurrentRGB = function(opt) {
   if(!opt)
     opt={};
-  var ledn = opt.ledn || 0;
+  var ledn = parseInt(opt.ledn || 0, 10);
   this._validateIndex(ledn);
 
   this._sendCommand('r', ledn, 0, 0, 0, 0, ledn);
@@ -205,8 +205,8 @@ Blink1.prototype.readCurrentRGB = function(opt) {
 Blink1.prototype.serverDown = function(opt) {
   if(!opt)
     opt={};
-  var on = opt.on || 0;
-  var millis = opt.millis || 0;
+  var on = parseInt(opt.on || 0, 10);
+  var millis = parseInt(opt.millis || 0, 10);
   this._validateMillis(millis);
   this._validateBit(on);
 
@@ -220,10 +220,10 @@ Blink1.prototype.serverDown = function(opt) {
 Blink1.prototype.playLoop = function(opt) {
   if(!opt)
     opt={};
-  var startPosition = opt.startPosition || 0;
-  var endPosition = opt.endPosition || 0;
-  var count = opt.count || 0;
-  var play = opt.play || 0;
+  var startPosition = parseInt(opt.startPosition || 0, 10);
+  var endPosition = parseInt(opt.endPosition || 0, 10);
+  var count = parseInt(opt.count || 0, 10);
+  var play = parseInt(opt.play || 0, 10);
 
   this._validateMk2Position(startPosition);
   this._validateMk2Position(endPosition);
@@ -269,11 +269,11 @@ Blink1.prototype.readPlayState = function(opt) {
 Blink1.prototype.writePatternLine = function(opt) {
   if(!opt)
     opt={};
-  var fadeMillis = opt.fadeMillis || 0;
-  var r = opt.r || 0;
-  var g = opt.g || 0;
-  var b = opt.b || 0;
-  var lineIndex = opt.lineIndex || 0;
+  var fadeMillis = parseInt(opt.fadeMillis || 0, 10);
+  var r = parseInt(opt.r || 0, 10);
+  var g = parseInt(opt.g || 0, 10);
+  var b = parseInt(opt.b || 0, 10);
+  var lineIndex = parseInt(opt.lineIndex || 0, 10);
   var gammaAdjust = opt.gammaAdjust || false;
 
 
@@ -301,27 +301,28 @@ Blink1.prototype.persistPatternLine = function(opt) {
 Blink1.prototype.readPatternLine = function(opt) {
   if(!opt)
     opt={};
-  var position = opt.position || 0;
-  this._validateMk2Position(position);
+  var lineIndex = parseInt(opt.lineIndex || 0, 10);
+  this._validateMk2Position(lineIndex);
 
-  this._sendCommand('R', 0, 0, 0, 0, 0, position, 0);
+  this._sendCommand('R', 0, 0, 0, 0, 0, lineIndex, 0);
 
   this._readResponse(function(response) {
     var value = {
+      lineIndex: lineIndex,
       r: response[2],
       g: response[3],
       b: response[4],
       fadeMillis: ((response[5] << 8) + (response[6] & 0xff)) * 10,
       ledn: response[7]
     };
-    this._doCallback(opt,value);
+    this._doCallback(opt, value);
   });
 };
 
 Blink1.prototype.setLed = function(opt) {
   if(!opt)
     opt={};
-  var ledn = opt.ledn || 0;
+  var ledn = parseInt(opt.ledn || 0, 10);
   this._validateIndex(ledn);
   this._sendCommand('l', ledn);
   this._doCallback(opt);
