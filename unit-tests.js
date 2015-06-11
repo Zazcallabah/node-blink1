@@ -601,6 +601,11 @@ describe('blink(1)', function() {
 
       sentFeatureReport.should.eql([FEATURE_REPORT_ID, 0x70, 1, STARTPOSITION, ENDPOSITION, COUNT, 0, 0, 0]);
     });
+    it('should send play on feature report despite string args', function() {
+      blink1.playLoop({play:1+"", startPosition:STARTPOSITION+"", endPosition:ENDPOSITION+"", count:COUNT+"" });
+
+      sentFeatureReport.should.eql([FEATURE_REPORT_ID, 0x70, 1, STARTPOSITION, ENDPOSITION, COUNT, 0, 0, 0]);
+    });
     it('should send pause on feature report', function() {
       blink1.playLoop({play:0, startPosition:STARTPOSITION, endPosition:ENDPOSITION, count:COUNT });
 
@@ -654,102 +659,106 @@ describe('blink(1)', function() {
 
     it('should throw an error when fadeMillis is not a number', function() {
       (function(){
-        blink1.writePatternLine('Bad fadeMillis', R, G, B, POSITION);
+        blink1.writePatternLine({fadeMillis:'notnumber', r:R, g:G, b:B, lineIndex:POSITION});
       }).should.throwError('fadeMillis must be a number');
     });
 
     it('should throw an error when fadeMillis is less than 0', function() {
       (function(){
-        blink1.writePatternLine(-1, R, G, B, POSITION);
-      }).should.throwError('fadeMillis must be between 0 and 655350');
+        blink1.writePatternLine({fadeMillis:-1, r:R, g:G, b:B, lineIndex:POSITION});      }).should.throwError('fadeMillis must be between 0 and 655350');
     });
 
     it('should throw an error when fadeMillis is greater than 655350', function() {
       (function(){
-        blink1.writePatternLine(655351, R, G, B, POSITION);
-      }).should.throwError('fadeMillis must be between 0 and 655350');
+        blink1.writePatternLine({fadeMillis:655351, r:R, g:G, b:B, lineIndex:POSITION});
+       }).should.throwError('fadeMillis must be between 0 and 655350');
     });
 
     it('should throw an error when r is not a number', function() {
       (function(){
-        blink1.writePatternLine(FADE_MILLIS, 'Bad r', G, B, POSITION);
+        blink1.writePatternLine({fadeMillis:FADE_MILLIS, r:'n', g:G, b:B, lineIndex:POSITION});
       }).should.throwError('r must be a number');
     });
 
     it('should throw an error when r is less than 0', function() {
       (function(){
-        blink1.writePatternLine(FADE_MILLIS, -1, G, B, POSITION);
+        blink1.writePatternLine({fadeMillis:FADE_MILLIS, r:-1, g:G, b:B, lineIndex:POSITION});
       }).should.throwError('r must be between 0 and 255');
     });
 
     it('should throw an error when r is greater than 255', function() {
       (function(){
-        blink1.writePatternLine(FADE_MILLIS, 256, G, B, POSITION);
+        blink1.writePatternLine({fadeMillis:FADE_MILLIS, r:256, g:G, b:B, lineIndex:POSITION});
       }).should.throwError('r must be between 0 and 255');
     });
 
     it('should throw an error when g is not a number', function() {
       (function(){
-        blink1.writePatternLine(FADE_MILLIS, R, 'Bad g', B, POSITION);
+        blink1.writePatternLine({fadeMillis:FADE_MILLIS, r:R, g:'b', b:B, lineIndex:POSITION});
       }).should.throwError('g must be a number');
     });
 
     it('should throw an error when g is less than 0', function() {
       (function(){
-        blink1.writePatternLine(FADE_MILLIS, R, -1, B, POSITION);
-      }).should.throwError('g must be between 0 and 255');
+        blink1.writePatternLine({fadeMillis:FADE_MILLIS, r:R, g:-1, b:B, lineIndex:POSITION});
+		}).should.throwError('g must be between 0 and 255');
     });
 
     it('should throw an error when g is greater than 255', function() {
       (function(){
-        blink1.writePatternLine(FADE_MILLIS, R, 256, B, POSITION);
+        blink1.writePatternLine({fadeMillis:FADE_MILLIS, r:R, g:256, b:B, lineIndex:POSITION});
       }).should.throwError('g must be between 0 and 255');
     });
 
     it('should throw an error when b is not a number', function() {
       (function(){
-        blink1.writePatternLine(FADE_MILLIS, R, G, 'Bad b', POSITION);
+        blink1.writePatternLine({fadeMillis:FADE_MILLIS, r:R, g:G, b:'b', lineIndex:POSITION});
       }).should.throwError('b must be a number');
     });
 
     it('should throw an error when b is less than 0', function() {
       (function(){
-        blink1.writePatternLine(FADE_MILLIS, R, G, -1, POSITION);
+        blink1.writePatternLine({fadeMillis:FADE_MILLIS, r:R, g:G, b:-1, lineIndex:POSITION});
       }).should.throwError('b must be between 0 and 255');
     });
 
     it('should throw an error when b is greater than 255', function() {
       (function(){
-        blink1.writePatternLine(FADE_MILLIS, R, G, 256, POSITION);
+        blink1.writePatternLine({fadeMillis:FADE_MILLIS, r:R, g:G, b:256, lineIndex:POSITION});
       }).should.throwError('b must be between 0 and 255');
     });
 
     it('should throw an error when position is not a number', function() {
       (function(){
-        blink1.writePatternLine(FADE_MILLIS, R, G, B, 'Bad position');
+        blink1.writePatternLine({fadeMillis:FADE_MILLIS, r:R, g:G, b:B, lineIndex:' '});
       }).should.throwError('position must be a number');
     });
 
     it('should throw an error when position is less than 0', function() {
       (function(){
-        blink1.writePatternLine(FADE_MILLIS, R, G, B, -1);
-      }).should.throwError('position must be between 0 and 11');
+        blink1.writePatternLine({fadeMillis:FADE_MILLIS, r:R, g:G, b:B, lineIndex:-1});
+      }).should.throwError('position must be between 0 and 31');
     });
 
     it('should throw an error when position is greater than 11', function() {
       (function(){
-        blink1.writePatternLine(FADE_MILLIS, R, G, B, 12);
-      }).should.throwError('position must be between 0 and 11');
+        blink1.writePatternLine({fadeMillis:FADE_MILLIS, r:R, g:G, b:B, lineIndex:32});
+      }).should.throwError('position must be between 0 and 31');
     });
 
     it('should send writepatternline feature report', function() {
-      blink1.writePatternLine(FADE_MILLIS, R, G, B, POSITION);
+              blink1.writePatternLine({fadeMillis:FADE_MILLIS, r:R, g:G, b:B, lineIndex:POSITION});
 
-      sentFeatureReport.should.eql([FEATURE_REPORT_ID, 0x50, blink1.degamma(R),  blink1.degamma(G),  blink1.degamma(B), (FADE_MILLIS / 10) >> 8, (FADE_MILLIS / 10) % 0xff, POSITION, 0]);
+      sentFeatureReport.should.eql([FEATURE_REPORT_ID, 0x50, R,G,B, (FADE_MILLIS / 10) >> 8, (FADE_MILLIS / 10) % 0xff, POSITION, 0]);
+    });
+    it('should send writepatternline feature report despite string params', function() {
+              blink1.writePatternLine({fadeMillis:FADE_MILLIS+"", r:R+"", g:G+"", b:B+"", lineIndex:POSITION+""});
+
+      sentFeatureReport.should.eql([FEATURE_REPORT_ID, 0x50, R,G,B, (FADE_MILLIS / 10) >> 8, (FADE_MILLIS / 10) % 0xff, POSITION, 0]);
     });
 
     it('should call back', function(done) {
-      blink1.writePatternLine(FADE_MILLIS, R, G, B, POSITION, done);
+      blink1.writePatternLine({callback: done});
     });
   });
 
@@ -770,44 +779,45 @@ describe('blink(1)', function() {
 
     it('should throw an error when position is not a number', function() {
       (function(){
-        blink1.readPatternLine('Bad position');
+        blink1.readPatternLine({lineIndex:'Bad position'});
       }).should.throwError('position must be a number');
     });
 
     it('should throw an error when position is less than 0', function() {
       (function(){
-        blink1.readPatternLine(-1);
-      }).should.throwError('position must be between 0 and 11');
+        blink1.readPatternLine({lineIndex:-1});
+      }).should.throwError('position must be between 0 and 31');
     });
 
     it('should throw an error when position is greater than 11', function() {
       (function(){
-        blink1.readPatternLine(12);
-      }).should.throwError('position must be between 0 and 11');
+        blink1.readPatternLine({lineIndex:32});
+      }).should.throwError('position must be between 0 and 31');
     });
 
     it('should send readpatternline feature report', function() {
-      blink1.readPatternLine(POSITION);
+      blink1.readPatternLine({lineIndex:POSITION});
 
       sentFeatureReport.should.eql([FEATURE_REPORT_ID, 0x52, 0, 0, 0, 0, 0, POSITION, 0]);
     });
 
     it('should call back with value', function(done) {
-      blink1.readPatternLine(POSITION, function(value) {
+      blink1.readPatternLine(function(value) {
         done();
       });
     });
 
     it('should call back with correct value', function(done) {
 
-      blink1.readPatternLine(POSITION, function(value) {
+      blink1.readPatternLine({lineIndex:POSITION, callback:function(value) {
         value.r.should.eql(R);
         value.g.should.eql(G);
         value.b.should.eql(B);
         value.fadeMillis.should.eql(FADE_MILLIS);
+		value.lineIndex.should.eql(POSITION);
 
         done();
-      });
+      }});
     });
   });
 
