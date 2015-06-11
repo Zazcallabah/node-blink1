@@ -101,10 +101,6 @@ Blink1.prototype._validateMillis = function(millis) {
   this._validateNumber(millis, 'millis', 0, 0x9FFF6);
 };
 
-Blink1.prototype._validatePosition = function(position) {
-  this._validateNumber(position, 'position', 0, 11);
-};
-
 Blink1.prototype._validateMk2Position = function(position) {
   this._validateNumber(position, 'position', 0, 31);
 };
@@ -131,36 +127,10 @@ Blink1.prototype.version = function(callback) {
   });
 };
 
-Blink1.prototype.eeRead = function(address, callback) {
-  this._validateAddress(address);
-
-  this._sendCommand('e', address);
-
-  this._readResponse(function(response) {
-    var value = response[3];
-
-    if(this._isValidCallback(callback)) {
-      callback(value);
-    }
-  });
-};
-
-Blink1.prototype.eeWrite = function(address, value, callback) {
-  this._validateAddress(address);
-  this._validateValue(value);
-
-  this._sendCommand('E', address, value);
-
-  if(this._isValidCallback(callback)) {
-    callback();
-  }
-};
-
 Blink1.prototype.degamma = function(n) {
   return Math.floor(((1 << Math.floor(n / 32)) - 1) +
           Math.floor((1 << Math.floor(n / 32)) * Math.floor((n % 32) + 1) + 15) / 32);
 };
-
 
 Blink1.prototype.fadeToRGB = function(fadeMillis, r, g, b, index, nogamma, callback) {
   this._validateFadeMillis(fadeMillis);
