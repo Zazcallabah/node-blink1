@@ -65,15 +65,14 @@ Blink1.prototype._isValidCallback = function(callback) {
   return (typeof callback === 'function');
 };
 
-Blink1.prototype._getCallback(opt) {
-  if(!opt) {
-    return opt;
-  }
+Blink1.prototype._doCallback(opt, par) {
   if(this._isValidCallback(opt)) {
-    return opt;
+    opt(par);
   }
-  return opt.callback;
-}
+  else if(opt && this._isValidCallback(opt.callback)) {
+    opt.callback(par);
+  }
+};
 
 Blink1.prototype._validateNumber = function(number, name, min, max) {
   if (typeof number !== 'number') {
@@ -160,10 +159,7 @@ Blink1.prototype.fadeToRGB = function(opt) {
 
   this._sendCommand('c', cr, cg, cb, dms >> 8, dms % 0xff, ledn);
 
-  var cb = this._getCallback(opt);
-  if(cb) {
-    cb();
-  }
+  this._doCallback(opt);
 };
 
 Blink1.prototype.setRGB = function(opt) {
@@ -184,10 +180,7 @@ Blink1.prototype.setRGB = function(opt) {
 
   this._sendCommand('n', cr, cg, cb, 0, 0, ledn);
 
-  var cb = this._getCallback(opt);
-  if(cb) {
-    cb();
-  }
+  this._doCallback(opt);
 };
 
 Blink1.prototype.readCurrentRGB = function(opt) {
@@ -205,10 +198,7 @@ Blink1.prototype.readCurrentRGB = function(opt) {
       b: response[4],
       ledn: response[7]
     };
-    var cb = this._getCallback(opt);
-    if(cb) {
-      cb(value);
-    }
+    this._doCallback(opt, value);
   });
 };
 
@@ -224,10 +214,7 @@ Blink1.prototype.serverDown = function(opt) {
 
   this._sendCommand('D', on, dms >> 8, dms % 0xff);
 
-  var cb = this._getCallback(opt);
-  if(cb) {
-    cb();
-  }
+  this._doCallback(opt);
 };
 
 Blink1.prototype.playLoop = function(opt) {
@@ -248,28 +235,19 @@ Blink1.prototype.playLoop = function(opt) {
 
   this._sendCommand('p', play, position, endPosition, count);
 
-  var cb = this._getCallback(opt);
-  if(cb) {
-    cb();
-  }
+  this._doCallback(opt);
 };
 
 Blink1.prototype.play = function(opt) {
   this._sendCommand('p', 1);
 
-  var cb = this._getCallback(opt);
-  if(cb) {
-    cb();
-  }
+  this._doCallback(opt);
 };
 
 Blink1.prototype.pause = function(opt) {
   this._sendCommand('p', 0);
 
-  var cb = this._getCallback(opt);
-  if(cb) {
-    cb();
-  }
+  this._doCallback(opt);
 };
 
 Blink1.prototype.readPlayState = function(opt) {
@@ -284,10 +262,7 @@ Blink1.prototype.readPlayState = function(opt) {
       playpos: response[6]
     };
 
-    var cb = this._getCallback(opt);
-    if(cb) {
-      cb(value);
-    }
+    this._doCallback(opt, value);
   });
 };
 
@@ -314,19 +289,13 @@ Blink1.prototype.writePatternLine = function(opt) {
 
   this._sendCommand('P', cr, cg, cb, dms >> 8, dms % 0xff, lineIndex);
 
-  var cb = this._getCallback(opt);
-  if(cb) {
-    cb();
-  }
+  this._doCallback(opt);
 };
 
 Blink1.prototype.persistPatternLine = function(opt) {
   this._sendCommand('W', 0xBE, 0xEF, 0xCA, 0xFE);
 
-  var cb = this._getCallback(opt);
-  if(cb) {
-    cb();
-  }
+  this._doCallback(opt);
 };
 
 Blink1.prototype.readPatternLine = function(opt) {
@@ -345,11 +314,7 @@ Blink1.prototype.readPatternLine = function(opt) {
       fadeMillis: ((response[5] << 8) + (response[6] & 0xff)) * 10,
       ledn: response[7]
     };
-
-    var cb = this._getCallback(opt);
-    if(cb) {
-      cb(value);
-    }
+    this._doCallback(opt,value);
   });
 };
 
@@ -359,10 +324,7 @@ Blink1.prototype.setLed = function(opt) {
   var ledn = opt.ledn || 0;
   this._validateIndex(ledn);
   this._sendCommand('l', ledn);
-  var cb = this._getCallback(opt);
-  if(cb) {
-    cb();
-  }
+  this._doCallback(opt);
 };
 
 Blink1.prototype.version = function(opt) {
@@ -370,20 +332,14 @@ Blink1.prototype.version = function(opt) {
 
   this._readResponse(function(response) {
     var version = String.fromCharCode(response[3]) + '.' + String.fromCharCode(response[4]);
-    var cb = this._getCallback(opt);
-    if(cb) {
-      cb(version);
-    }
+    this._doCallback(opt, version);
   });
 };
 
 Blink1.prototype.close = function(opt) {
   this.hidDevice.close();
 
-  var cb = this._getCallback(opt);
-    if(cb) {
-      cb(version);
-    }
+  this._doCallback(opt);
 };
 
 Blink1.devices = devices;
