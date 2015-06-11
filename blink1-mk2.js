@@ -115,18 +115,6 @@ Blink1.prototype._readResponse = function(callback) {
   }
 };
 
-Blink1.prototype.version = function(callback) {
-  this._sendCommand('v');
-
-  this._readResponse(function(response) {
-    var version = String.fromCharCode(response[3]) + '.' + String.fromCharCode(response[4]);
-
-    if(this._isValidCallback(callback)) {
-      callback(version);
-    }
-  });
-};
-
 Blink1.prototype.degamma = function(n) {
   return Math.floor(((1 << Math.floor(n / 32)) - 1) +
           Math.floor((1 << Math.floor(n / 32)) * Math.floor((n % 32) + 1) + 15) / 32);
@@ -178,23 +166,21 @@ Blink1.prototype.setRGB = function(r, g, b, index, nogamma, callback) {
   }
 };
 
-Blink1.prototype.rgb = function(index, callback) {
-  if (this._isValidCallback(index)) {
-    callback = index;
-    index = 0;
-  } else if (index === undefined) {
-    index = 0;
-  }
+Blink1.prototype.readCurrentRGB = function(ledn, callback) {
+  this._validateIndex(ledn);
 
-  this._sendCommand('r', index, 0, 0, 0, 0, index);
+  this._sendCommand('r', ledn, 0, 0, 0, 0, ledn);
 
   this._readResponse(function(response) {
-    var r = response[2];
-    var g = response[3];
-    var b = response[4];
+    var value = {
+      r: response[2],
+      g: response[3],
+      b: response[4],
+      ledn: response[7]
+    };
 
     if(this._isValidCallback(callback)) {
-      callback(r, g, b);
+      callback(value);
     }
   });
 };
@@ -209,7 +195,7 @@ Blink1.prototype._serverDown = function(on, millis, callback) {
   }
 };
 
-Blink1.prototype.enableServerDown = function(millis, callback) {
+/*Blink1.prototype.enableServerDown = function(millis, callback) {
   this._validateMillis(millis);
 
   this._serverDown(1, millis, callback);
@@ -220,20 +206,7 @@ Blink1.prototype.disableServerDown = function(millis, callback) {
 
   this._serverDown(0, millis, callback);
 };
-
-Blink1.prototype._play = function(play, position, callback) {
-  this._sendCommand('p', play, position);
-
-  if(this._isValidCallback(callback)) {
-    callback();
-  }
-};
-
-Blink1.prototype.play = function(position, callback) {
-  this._validateMk2Position(position);
-
-  this._play(1, position, callback);
-};
+*/
 
 Blink1.prototype._playLoop = function(play, position, endPosition, count, callback) {
   this._sendCommand('p', play, position, endPosition, count);
@@ -251,8 +224,41 @@ Blink1.prototype.playLoop = function(startPosition, endPosition, count, callback
   this._playLoop(1, startPosition, endPosition, count, callback);
 };
 
+/*
+Blink1.prototype._play = function(play, position, callback) {
+  this._sendCommand('p', play, position);
+
+  if(this._isValidCallback(callback)) {
+    callback();
+  }
+};
+
+Blink1.prototype.play = function(position, callback) {
+  this._validateMk2Position(position);
+
+  this._play(1, position, callback);
+};
+
 Blink1.prototype.pause = function(callback) {
   this._play(0, 0, callback);
+};*/
+
+Blink1.prototype.readPlayState = function(callback) {
+  this._sendCommand('S');
+
+  this._readResponse(function(response) {
+    var value = {
+      playing: response[2],
+      playstart: response[3],
+      playend: response[4],
+      playcount: response[5],
+      playpos: response[6]
+    };
+
+    if(this._isValidCallback(callback)) {
+      callback(value);
+    }
+  });
 };
 
 Blink1.prototype.writePatternLine = function(fadeMillis, r, g, b, position, nogamma, callback) {
@@ -267,6 +273,14 @@ Blink1.prototype.writePatternLine = function(fadeMillis, r, g, b, position, noga
   var cb = nogamma ? b : this.degamma(b);
 
   this._sendCommand('P', cr, cg, cb, dms >> 8, dms % 0xff, position, 0);
+
+  if(this._isValidCallback(callback)) {
+    callback();
+  }
+};
+
+Blink1.prototype.persistPatternLine = function(callback) {
+  this._sendCommand('W', 0xBE, 0xEF, 0xCA, 0xFE);
 
   if(this._isValidCallback(callback)) {
     callback();
@@ -293,49 +307,24 @@ Blink1.prototype.readPatternLine = function(position, callback) {
   });
 };
 
-Blink1.prototype.readCurrentColor = function(ledn, callback) {
-  this._validateIndex(ledn);
-
-  this._sendCommand('r', 0, 0, 0, 0, 0, ledn);
-
-  this._readResponse(function(response) {
-    var value = {
-      r: response[2],
-      g: response[3],
-      b: response[4],
-      ledn: response[7]
-    };
-
-    if(this._isValidCallback(callback)) {
-      callback(value);
-    }
-  });
-};
-
-Blink1.prototype.readPlayState = function(callback) {
-  this._sendCommand('S');
-
-  this._readResponse(function(response) {
-    var value = {
-      playing: response[2],
-      playstart: response[3],
-      playend: response[4],
-      playcount: response[5],
-      playpos: response[6]
-    };
-
-    if(this._isValidCallback(callback)) {
-      callback(value);
-    }
-  });
-};
-
 Blink1.prototype.setLed = function(ledn, callback) {
   this._validateIndex(ledn);
   this._sendCommand('l', ledn);
   if(this._isValidCallback(callback)) {
     callback();
   }
+};
+
+Blink1.prototype.version = function(callback) {
+  this._sendCommand('v');
+
+  this._readResponse(function(response) {
+    var version = String.fromCharCode(response[3]) + '.' + String.fromCharCode(response[4]);
+
+    if(this._isValidCallback(callback)) {
+      callback(version);
+    }
+  });
 };
 
 Blink1.prototype.close = function(callback) {
@@ -350,4 +339,3 @@ Blink1.devices = devices;
 
 module.exports = Blink1;
 module.exports.Blink1 = Blink1; // backwards compatibility with older version
-
