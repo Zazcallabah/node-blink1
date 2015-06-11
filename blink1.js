@@ -65,7 +65,7 @@ Blink1.prototype._isValidCallback = function(callback) {
   return (typeof callback === 'function');
 };
 
-Blink1.prototype._doCallback(opt, par) {
+Blink1.prototype._doCallback = function(opt, par) {
   if(this._isValidCallback(opt)) {
     opt(par);
   }
