@@ -75,7 +75,7 @@ Blink1.prototype._doCallback = function(opt, par) {
 };
 
 Blink1.prototype._validateNumber = function(number, name, min, max) {
-  if (typeof number !== 'number') {
+  if (typeof number !== 'number' || isNaN(number)) {
     throw new Error(name + ' must be a number');
   }
 

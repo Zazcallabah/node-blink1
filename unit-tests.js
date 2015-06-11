@@ -200,106 +200,106 @@ describe('blink(1)', function() {
 
     it('should throw an error when fadeMillis is not a number', function() {
       (function(){
-        blink1.fadeToRGB('Bad fadeMillis', R, G, B);
+        blink1.fadeToRGB({fadeMillis:'Bad fadeMillis'});
       }).should.throwError('fadeMillis must be a number');
     });
 
     it('should throw an error when fadeMillis is less than 0', function() {
       (function(){
-        blink1.fadeToRGB(-1, R, G, B);
+        blink1.fadeToRGB({fadeMillis:-1});
       }).should.throwError('fadeMillis must be between 0 and 655350');
     });
 
     it('should throw an error when fadeMillis is greater than 655350', function() {
       (function(){
-        blink1.fadeToRGB(655351, R, G, B);
+        blink1.fadeToRGB({fadeMillis:655351});
       }).should.throwError('fadeMillis must be between 0 and 655350');
     });
 
     it('should throw an error when r is not a number', function() {
       (function(){
-        blink1.fadeToRGB(FADE_MILLIS, 'Bad r', G, B);
+        blink1.fadeToRGB({r:'nan'});
       }).should.throwError('r must be a number');
     });
 
     it('should throw an error when r is less than 0', function() {
       (function(){
-        blink1.fadeToRGB(FADE_MILLIS, -1, G, B);
+        blink1.fadeToRGB({r:-1});
       }).should.throwError('r must be between 0 and 255');
     });
 
     it('should throw an error when r is greater than 255', function() {
       (function(){
-        blink1.fadeToRGB(FADE_MILLIS, 256, G, B);
+        blink1.fadeToRGB({r:256});
       }).should.throwError('r must be between 0 and 255');
     });
 
     it('should throw an error when g is not a number', function() {
       (function(){
-        blink1.fadeToRGB(FADE_MILLIS, R, 'Bad g', B);
+        blink1.fadeToRGB({g:'nan'});
       }).should.throwError('g must be a number');
     });
 
     it('should throw an error when g is less than 0', function() {
       (function(){
-        blink1.fadeToRGB(FADE_MILLIS, R, -1, B);
+        blink1.fadeToRGB({g:-1});
       }).should.throwError('g must be between 0 and 255');
     });
 
     it('should throw an error when g is greater than 255', function() {
       (function(){
-        blink1.fadeToRGB(FADE_MILLIS, R, 256, B);
+        blink1.fadeToRGB({g:256});
       }).should.throwError('g must be between 0 and 255');
     });
 
     it('should throw an error when b is not a number', function() {
       (function(){
-        blink1.fadeToRGB(FADE_MILLIS, R, G, 'Bad b');
+        blink1.fadeToRGB({b:'nan'});
       }).should.throwError('b must be a number');
     });
 
     it('should throw an error when b is less than 0', function() {
       (function(){
-        blink1.fadeToRGB(FADE_MILLIS, R, G, -1);
+        blink1.fadeToRGB({b:-1});
       }).should.throwError('b must be between 0 and 255');
     });
 
     it('should throw an error when b is greater than 255', function() {
       (function(){
-        blink1.fadeToRGB(FADE_MILLIS, R, G, 256);
+        blink1.fadeToRGB({b:256});
       }).should.throwError('b must be between 0 and 255');
     });
 
     it('should send fadetorgb feature report', function() {
-      blink1.fadeToRGB(FADE_MILLIS, R, G, B);
+      blink1.fadeToRGB({fademillis:FADE_MILLIS, r:R, g:G, b:B});
 
       sentFeatureReport.should.eql([FEATURE_REPORT_ID, 0x63, blink1.degamma(R),  blink1.degamma(G),  blink1.degamma(B), (FADE_MILLIS / 10) >> 8, (FADE_MILLIS / 10) % 0xff, 0, 0]);
     });
 
     it('should call back', function(done) {
-      blink1.fadeToRGB(FADE_MILLIS, blink1.degamma(R),  blink1.degamma(G),  blink1.degamma(B), done);
+      blink1.fadeToRGB({fademillis:FADE_MILLIS, r:R, g:G, b:B, callback: done});
+    });
+
+    it('should call back as default parameter', function(done) {
+      blink1.fadeToRGB(done);
     });
 
     it('should throw an error when index is less than 0', function() {
       (function(){
-        blink1.fadeToRGB(FADE_MILLIS, R, G, B, -1);
+        blink1.fadeToRGB({ledn: -1});
       }).should.throwError('index must be between 0 and 2');
     });
 
     it('should throw an error when index is greater than 2', function() {
       (function(){
-        blink1.fadeToRGB(FADE_MILLIS, R, G, B, 3);
+        blink1.fadeToRGB({ledn: 3});
       }).should.throwError('index must be between 0 and 2');
     });
 
     it('should send fadetorgb index feature report', function() {
-      blink1.fadeToRGB(FADE_MILLIS, R, G, B, INDEX);
+      blink1.fadeToRGB({fademillis:FADE_MILLIS, r:R, g:G, b:B, ledn:INDEX});
 
       sentFeatureReport.should.eql([FEATURE_REPORT_ID, 0x63, blink1.degamma(R),  blink1.degamma(G),  blink1.degamma(B), (FADE_MILLIS / 10) >> 8, (FADE_MILLIS / 10) % 0xff, INDEX, 0]);
-    });
-
-    it('should call back (index)', function(done) {
-      blink1.fadeToRGB(FADE_MILLIS, blink1.degamma(R),  blink1.degamma(G),  blink1.degamma(B), INDEX, done);
     });
   });
 
