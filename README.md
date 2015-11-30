@@ -1,5 +1,4 @@
-node-blink1
-===========
+# node-blink1
 
 A node.js library for the
 [blink(1)](http://www.kickstarter.com/projects/thingm/blink1-the-usb-rgb-led)
@@ -7,98 +6,112 @@ by [ThingM](http://thingm.com).
 
 For for info. on the blink(1), see [todbot/blink1](https://github.com/todbot/blink1)
 
-Install
--------
+## Install
 
-    npm install node-blink1
-
-### Windows Users
-
-`node-blink1` depends on `node-hid`, a native module that uses `node-gyp` to
-build.  `node-gyp` requires Python 2.7.3 in the PATH, and if you have Python 3
-installed, you may have to modify your PATH for `node-gyp` to locate it.
-
-See [issue #3](https://github.com/sandeepmistry/node-blink1/issues/3) for
-details.
+```sh
+npm install node-blink1
+```
 
 ### Linux Users
 
-If you encounter the following error while installing, you'll need new install
-of `libusb`.
+See [node-hid's compiling from source instructions](https://github.com/node-hid/node-hid#compiling-from-source)
 
+## Usage
+
+```javascript
+var Blink1 = require('node-blink1');
 ```
-libusb.h: No such file or directory compilation terminated.
-```
-
-For Debian and Ubuntu, install the package `libusb-1.0-0.dev`.
-
-See [issue #4](https://github.com/sandeepmistry/node-blink1/issues/4) for
-details.
-
-Usage
------
-
-    var Blink1 = require('node-blink1');
 
 Get list of blink(1) devices connected:
 
-    Blink1.devices(); // returns array of serial numbers
+```javascript
+Blink1.devices(); // returns array of serial numbers
+```
 
 Create blink(1) object without serial number, uses first device:
 
-    var blink1 = new Blink1();
+```javascript
+var blink1 = new Blink1();
+```
 
 Create blink(1) object with serial number, to get list of serial numbers use
 `Blink1.devices()`:
 
-    var blink1 = new Blink1(serialNumber);
+```javascript
+var blink1 = new Blink1(serialNumber);
+```
 
-Get version:
+### Get version
 
-    blink1.version(callback(version));
+```javascript
+blink1.version(callback(version));
+```
 
-__Set colors__
+### Set colors
 
 Fade to RGB, optional callback called after `fadeMillis` ms:
 
-    blink1.fadeToRGB(fadeMillis, r, g, b, [callback]); // r, g, b: 0 - 255
+```javascript
+blink1.fadeToRGB(fadeMillis, r, g, b, [callback]); // r, g, b: 0 - 255
 
-    blink1.fadeToRGB(fadeMillis, r, g, b, [index, callback]); // r, g, b: 0 - 255
-                                                             // index (mk2 only): 0 - 2
+blink1.fadeToRGB(fadeMillis, r, g, b, [index, callback]); // r, g, b: 0 - 255
+                                                          // index (mk2 only): 0 - 2
+```
 
 Set RGB:
 
-    blink1.setRGB(r, g, b, [callback]); // r, g, b: 0 - 255
+```javascript
+blink1.setRGB(r, g, b, [callback]); // r, g, b: 0 - 255
+```
 
 Get RGB (mk2 only):
 
-    blink1.rgb([index,] callback(r, g, b));
+```javascript
+blink1.rgb([index,] callback(r, g, b));
+```
 
-__Other methods__
+Off:
+
+```javascript
+blink1.off([callback]);
+```
+
+### Other methods
 
 Set server down (enable, disable), optional callback called after `millis` ms:
 
-    blink1.enableServerDown(millis, [callback]) // tickle
+```javascript
+blink1.enableServerDown(millis, [callback]); // tickle
 
-    blink1.disableServerDown(millis, [callback]) // off
+blink1.disableServerDown(millis, [callback]); // off
+```
 
 Play (start playing the pattern lines at the specified position):
 
-    blink1.play = function(position, [callback])
+```javascript
+blink1.play(position, [callback]);
+```
 
 Play Loop (start playing a subset of the pattern lines at specified start and end positions. Specifying count = 0 will loop pattern forever):
-    
-    blink1.playLoop = function(startPosition, endPosition, count, [callback])
+
+```javascript
+blink1.playLoop(startPosition, endPosition, count, [callback]);
+```
 
 Pause (stop playing the pattern line):
 
-    blink1.pause = function([callback])
+```javascript
+blink1.pause([callback]);
+```
 
 Write pattern line (set the parameters for a pattern line, at the specified position):
 
-    blink1.writePatternLine(fadeMillis, r, g, b, position, [callback]) // r, g, b: 0 - 255
+```javascript
+blink1.writePatternLine(fadeMillis, r, g, b, position, [callback]) // r, g, b: 0 - 255
+````
 
 A simple example of this, used to flash red on & off is:
+
 ```javascript
 blink1.writePatternLine(200, 255, 0, 0, 0);
 blink1.writePatternLine(200, 0, 0, 0, 1);
@@ -107,16 +120,19 @@ blink1.play(0);
 
 Read pattern line (at the position):
 
-    blink1.readPatternLine(position, [callback])
+```javascript
+blink1.readPatternLine(position, [callback])
+```
 
 Close (the underlying HID device):
 
-    blink1.close([callback]);
+```javascript
+blink1.close([callback]);
+```
 
-License
-========
+## License
 
-Copyright (C) 2014 Sandeep Mistry <sandeep.mistry@gmail.com>
+Copyright (C) 2015 Sandeep Mistry <sandeep.mistry@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -134,3 +150,5 @@ FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
 COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+[![Analytics](https://ga-beacon.appspot.com/UA-56089547-1/sandeepmistry/node-blink1?pixel)](https://github.com/igrigorik/ga-beacon)

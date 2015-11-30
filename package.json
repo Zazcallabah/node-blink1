@@ -1,12 +1,13 @@
 {
   "name": "node-blink1",
   "description": "A node.js library for the blink(1).",
-  "version": "0.1.6",
+  "version": "0.2.2",
   "author": {
     "name": "Sandeep Mistry",
     "email": "sandeep.mistry@gmail.com",
     "url": "https://github.com/sandeepmistry"
   },
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git://github.com/sandeepmistry/node-blink1.git"
@@ -19,7 +20,7 @@
     "blink1"
   ],
   "dependencies": {
-    "node-hid": "~0.3.2"
+    "node-hid": "~0.5.0"
   },
   "devDependencies": {
     "jshint": "latest",
