@@ -3,6 +3,8 @@ var HID = require('node-hid');
 var VENDOR_ID = 0x27B8;
 var PRODUCT_ID = 0x01ED;
 
+// gamma 0 = off
+
 var REPORT_ID = 1;
 var REPORT_LENGTH = 9;
 
@@ -47,6 +49,7 @@ function Blink1(serialNumber) {
 
   this.serialNumber = serialNumber;
   this.hidDevice = new HID.HID(blink1HIDdevicePath);
+  this.gamma = 2;
 }
 
 Blink1.prototype._sendCommand = function(/* command [, args ...]*/) {
@@ -128,9 +131,34 @@ Blink1.prototype._readResponse = function(callback) {
   }
 };
 
+// degamma is done before writing value to blink1 device
 Blink1.prototype.degamma = function(n) {
-  return Math.floor(((1 << Math.floor(n / 32)) - 1) +
-          Math.floor((1 << Math.floor(n / 32)) * Math.floor((n % 32) + 1) + 15) / 32);
+	if( this.gamma === 0 )
+		return n;
+		
+	var bz = n/255.0;
+	var sq = Math.pow(bz,(this.gamma))
+	return sq * 255;
+};
+
+// regamma is done after reading value from blink1 device
+Blink1.prototype.regamma = function(n) {
+	if( this.gamma === 0 )
+		return n;
+		
+	var bz = n/255.0;
+	var sq = Math.pow(bz,1/this.gamma)
+	return sq * 255;
+};
+
+Blink1.prototype.setgamma = function(opt){
+  var g = parseInt(opt.gamma || 0, 10);
+
+	this.gamma = g;
+};
+
+Blink1.prototype.getgamma = function(opt){
+    this._doCallback(opt, {gamma:this.gamma});
 };
 
 Blink1.prototype.fadeRGB = function(opt) {
@@ -141,7 +169,7 @@ Blink1.prototype.fadeRGB = function(opt) {
   var g = parseInt(opt.g || 0, 10);
   var b = parseInt(opt.b || 0, 10);
   var fadeMillis = parseInt(opt.fadeMillis || opt.speed || 0, 10);
-  var gammaAdjust = opt.gammaAdjust || false;
+  var gammaAdjust = opt.gammaAdjust || true;
 
   this._validateFadeMillis(fadeMillis);
   this._validateRGB(r, g, b);
@@ -159,7 +187,7 @@ Blink1.prototype.fadeRGB = function(opt) {
 
   this._sendCommand('c', cr, cg, cb, dms >> 8, dms % 0xff, ledn);
 
-  this._doCallback(opt);
+  this._doCallback(opt, {r:cr,g:cg,b:cb});
 };
 
 Blink1.prototype.setRGB = function(opt) {
@@ -169,7 +197,7 @@ Blink1.prototype.setRGB = function(opt) {
   var r = parseInt(opt.r || 0, 10);
   var g = parseInt(opt.g || 0, 10);
   var b = parseInt(opt.b || 0, 10);
-  var gammaAdjust = opt.gammaAdjust || false;
+  var gammaAdjust = opt.gammaAdjust || true;
 
   this._validateRGB(r, g, b);
   this._validateIndex(ledn);
@@ -187,15 +215,16 @@ Blink1.prototype.readRGB = function(opt) {
   if(!opt)
     opt={};
   var ledn = parseInt(opt.ledn || 0, 10);
+  var gammaAdjust = opt.gammaAdjust || true;
   this._validateIndex(ledn);
 
   this._sendCommand('r', ledn, 0, 0, 0, 0, ledn);
 
   this._readResponse(function(response) {
     var value = {
-      r: response[2],
-      g: response[3],
-      b: response[4],
+      r: gammaAdjust ? this.regamma( response[2] ) : response[2],
+      g: gammaAdjust ? this.regamma( response[3] ) : response[3],
+      b: gammaAdjust ? this.regamma( response[4] ) : response[4],
       ledn: response[7]
     };
     this._doCallback(opt, value);
@@ -274,7 +303,7 @@ Blink1.prototype.writePatternLine = function(opt) {
   var g = parseInt(opt.g || 0, 10);
   var b = parseInt(opt.b || 0, 10);
   var lineIndex = parseInt(opt.lineIndex || 0, 10);
-  var gammaAdjust = opt.gammaAdjust || false;
+  var gammaAdjust = opt.gammaAdjust || true;
 
 
   this._validateFadeMillis(fadeMillis);
@@ -306,6 +335,7 @@ Blink1.prototype.readPatternLine = function(opt) {
   if(!opt)
     opt={};
   var lineIndex = parseInt(opt.lineIndex || 0, 10);
+  var gammaAdjust = opt.gammaAdjust || true;
   this._validateMk2Position(lineIndex);
 
   this._sendCommand('R', 0, 0, 0, 0, 0, lineIndex, 0);
@@ -313,9 +343,9 @@ Blink1.prototype.readPatternLine = function(opt) {
   this._readResponse(function(response) {
     var value = {
       lineIndex: lineIndex,
-      r: response[2],
-      g: response[3],
-      b: response[4],
+      r: gammaAdjust ? this.regamma( response[2] ) : response[2],
+      g: gammaAdjust ? this.regamma( response[3] ) : response[3],
+      b: gammaAdjust ? this.regamma( response[4] ) : response[4],
       fadeMillis: ((response[5] << 8) + (response[6] & 0xff)) * 10,
       ledn: response[7]
     };
