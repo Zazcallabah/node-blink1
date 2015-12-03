@@ -49,7 +49,7 @@ function Blink1(serialNumber) {
 
   this.serialNumber = serialNumber;
   this.hidDevice = new HID.HID(blink1HIDdevicePath);
-  this.gamma = 2;
+  this.gamma = 0.44;
 }
 
 Blink1.prototype._sendCommand = function(/* command [, args ...]*/) {
